@@ -6,9 +6,6 @@ app.controller("EmployeeController", [
   function ($scope, EmployeeService) {
     $scope.title = "Pesquisar";
 
-    $scope.helperScore = 0;
-    $scope.helperText = "";
-
     $scope.showModal = false;
 
     $scope.showMessage = false;
