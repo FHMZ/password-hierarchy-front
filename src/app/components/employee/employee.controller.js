@@ -45,14 +45,10 @@ app.controller("EmployeeController", [
       if (!searchText) {
         $scope.filteredEmployees = $scope.employees;
       } else {
-        EmployeeService.getEmployeeByName(searchText)
-          .then(function (response) {
-            $scope.filteredEmployees = response.data;
-          })
-          .catch(function (error) {
-            console.log("error: ", error);
-            $scope.filteredEmployees = [];
-          });
+        $scope.filteredEmployees = recursiveFilter(
+          $scope.employees,
+          searchText
+        );
       }
     };
 
@@ -191,6 +187,25 @@ app.controller("EmployeeController", [
     $scope.onToggleMessage = function () {
       $scope.showMessage = !$scope.showMessage;
     };
+
+    function recursiveFilter(employees, text) {
+      return employees.reduce((result, employee) => {
+        const isMatch = employee.name.toLowerCase().includes(text);
+
+        const filteredDependents = employee.dependents
+          ? recursiveFilter(employee.dependents, text)
+          : [];
+
+        if (isMatch || filteredDependents.length > 0) {
+          result.push({
+            ...employee,
+            dependents: filteredDependents,
+          });
+        }
+
+        return result;
+      }, []);
+    }
 
     $scope.loadEmployees();
   },

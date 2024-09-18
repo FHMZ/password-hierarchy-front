@@ -7,7 +7,6 @@ app.service("EmployeeService", [
 
     const baseUrl = `${apiHost}/api/employee`;
 
-    // Fetch all employees
     this.getAll = function () {
       return $http.get(`${baseUrl}/employees`);
     };
@@ -30,10 +29,6 @@ app.service("EmployeeService", [
     this.getScore = function (item) {
       const data = { item: item };
       return $http.post(`${baseUrl}/score`, data);
-    };
-
-    this.getEmployeeByName = function (name) {
-      return $http.get(`${baseUrl}/name?name=${name}`);
     };
   },
 ]);
