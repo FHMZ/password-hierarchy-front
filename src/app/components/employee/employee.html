@@ -99,8 +99,9 @@
         <button
           class="button button-primary button-save"
           type="submit"
-          ng-class="{'button-disabled' : myForm.$invalid}"
+          ng-class="{'button-disabled' : form.password.length < 8 || myForm.$invalid}"
           ng-if="!isDelete"
+          ng-disabled="form.password.length < 8 || myForm.$invalid"
         >
           SALVAR
         </button>
@@ -159,7 +160,7 @@
           type="button"
           ng-click="onOpenNew()"
         >
-          + NOVO
+          NOVO
         </button>
       </div>
     </div>
