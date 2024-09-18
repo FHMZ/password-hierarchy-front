@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Employee Management</title>
+  <link rel="stylesheet" href="assets/styles/global.css" />
+</head>
+<body>
+  <div ng-view class="ng-scope"></div>
+
+  <!-- AngularJS Injections -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+  <!-- App Injections -->
+  <script src="app/app.module.js"></script>
+  <script src="app/app.router.js"></script>
+  <script src="app/services/service.js"></script>
+  <script src="app/components/employee/employee.controller.js"></script>
+</body>
+</html>

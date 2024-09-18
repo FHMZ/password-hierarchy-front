@@ -1,0 +1,220 @@
+<div ng-controller="EmployeeController">
+  <div class="card" ng-if="showModal">
+    <div class="card-header">
+      <span class="card-title">{{title}}</span>
+    </div>
+
+    <form name="myForm" ng-submit="onSubmit(myForm.$valid)" novalidate>
+      <div class="card-content">
+        <div class="input-column">
+          <div class="input-group">
+            <div class="input-container">
+              <input
+                type="text"
+                id="name-id"
+                class="input-field"
+                placeholder="Digite o Nome"
+                ng-model="form.name"
+                name="name"
+                required
+                ng-disabled="isDelete"
+              />
+              <label for="name-id" class="input-label">Nome</label>
+              <span
+                class="input-error-text"
+                ng-show="myForm.name.$touched && myForm.name.$invalid"
+                >Nome é obrigatório.</span
+              >
+            </div>
+
+            <div class="input-container">
+              <select
+                id="dependent-id"
+                class="input-field"
+                ng-model="form.dependentId"
+                name="dependent"
+                ng-disabled="isDelete"
+                ng-options="item.id as item.name for item in dependents"
+              ></select>
+              <label for="dependent-id" class="input-label"
+                >Dependente de</label
+              >
+            </div>
+          </div>
+
+          <div class="input-group" ng-if="!isDelete">
+            <div class="input-container">
+              <input
+                type="email"
+                id="email-id"
+                class="input-field"
+                placeholder="Digite o Email"
+                ng-model="form.email"
+                name="email"
+              />
+              <label for="email-id" class="input-label">Email</label>
+              <span
+                class="input-error-text"
+                ng-show="myForm.email.$touched && myForm.email.$invalid"
+                >Email é inválido.</span
+              >
+            </div>
+
+            <div class="input-helper">
+              <div class="input-container">
+                <input
+                  type="text"
+                  id="password-id"
+                  class="input-field"
+                  placeholder="Digite a Senha"
+                  ng-model="form.password"
+                  name="password"
+                  ng-change="checkPasswordStrength()"
+                  required
+                />
+                <label for="password-id" class="input-label">Senha</label>
+                <span
+                  class="input-error-text"
+                  ng-show="myForm.password.$touched && myForm.password.$invalid"
+                  >Senha é obrigatória.</span
+                >
+              </div>
+              <span
+                ng-show="score.value > 0"
+                class="input-helper-text"
+                ng-class="{
+                'color-error': score.value <= 15,
+                'color-warning': score.value > 15 && score.value <= 60,
+                'color-info': score.value > 60 && score.value <= 85,
+                'color-success': score.value > 85
+              }"
+                >{{ score.text }}</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <button
+          class="button button-primary button-save"
+          type="submit"
+          ng-class="{'button-disabled' : myForm.$invalid}"
+          ng-if="!isDelete"
+        >
+          SALVAR
+        </button>
+        <button
+          class="button button-error button-delete"
+          type="submit"
+          ng-click="onDelete()"
+          ng-if="isDelete"
+        >
+          Deletar
+        </button>
+        <button
+          class="button button-cancel"
+          type="button"
+          ng-click="onCancel()"
+        >
+          CANCELAR
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" ng-if="!showModal">
+    <div
+      ng-if="showMessage"
+      class="alert"
+      ng-class="{
+        'bg-default' : api.status === '',
+        'bg-error': api.status === 'error',
+        'bg-success': api.status === 'success'
+    }"
+    >
+      <span>{{ api.message }}</span>
+      <button class="button button-small" ng-click="onToggleMessage()">
+        Fechar
+      </button>
+    </div>
+    <div class="card-header">
+      <span class="card-title">{{title}}</span>
+
+      <div class="search-container">
+        <div class="input-container">
+          <input
+            type="text"
+            id="search-id"
+            class="input-field"
+            placeholder="Digite o Nome"
+            ng-model="search.field"
+            ng-change="filterByName()"
+            name="search"
+          />
+          <label for="search-id" class="input-label">Pesquisar</label>
+        </div>
+        <button
+          class="button button-primary button-search"
+          type="button"
+          ng-click="onOpenNew()"
+        >
+          + NOVO
+        </button>
+      </div>
+    </div>
+
+    <div class="card-content">
+      <div class="list-container">
+        <span class="list-title">Lista de Nomes</span>
+
+        <script type="text/ng-template" id="dependentsTree">
+          <div class="list-wrapper">
+            <div class="round-letter">
+              <span>P</span>
+            </div>
+            <div class="text-group">
+              <div class="text-container">
+                <span class="text-primary">{{item.name}}</span>
+                <span class="text-secondary">{{item.email}}</span>
+              </div>
+              <div class="progress-bar"
+                  ng-class="{
+                    'bg-error': item.passwordStrengthLabel === 'Ruim',
+                    'bg-warning': item.passwordStrengthLabel === 'Mediana',
+                    'bg-info': item.passwordStrengthLabel === 'Boa',
+                    'bg-success': item.passwordStrengthLabel === 'Forte'
+                  }">
+                  <span>{{item.passwordStrengthValue}}% - {{item.passwordStrengthLabel}}</span>
+                </div>
+            </div>
+            <div class="list-secondary-actions">
+              <button
+                class="button button-small button-error"
+                ng-click="onOpenDelete(item)">
+                Deletar
+              </button>
+              <button
+                class="button button-small button-info"
+                ng-click="onOpenEdit(item)">
+                Editar
+              </button>
+            </div>
+          </div>
+
+          <div class="sub-list" ng-if="item.dependents">
+            <div class="list-sub-item" ng-repeat="item in item.dependents" ng-include="'dependentsTree'"></div>
+          </div>
+        </script>
+
+        <ul class="list">
+          <li
+            class="list-item"
+            ng-repeat="item in filteredEmployees"
+            ng-include="'dependentsTree'"
+          ></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
